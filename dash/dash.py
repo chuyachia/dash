@@ -564,7 +564,19 @@ class Dash(object):
                         'not of type `dash.{}`.'.format(
                             name.lower(), str(arg), name
                         ))
-
+                
+                if isinstance(arg,Output):
+                    output_id_prop = (arg.component_id,arg.component_property)
+                
+                if isinstance(arg,Input):
+                    input_id_prop = (arg.component_id,arg.component_property)
+                    if output_id_prop == input_id_prop:
+                        raise exceptions.CallbackException('''
+                            The input component {} is the same as 
+                            the output component. Circular dependencies 
+                            are not supported.
+                        '''.format(arg.component_id))
+                    
                 if (not self.config.first('suppress_callback_exceptions',
                                           'supress_callback_exceptions') and
                         arg.component_id not in layout and
